@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StyleFinder AI</title>
+
+  <style>
+    /* 1. 기본 화면 스타일 */
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 10px;
+      background: #f7f7f7;
+      color: #222;
+    }
+
+    h1, h2, h3 {
+      margin-bottom: 10px;
+    }
+
+    .sub-text {
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .box {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /*  2. 버튼 스타일 */
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #1976d2;
+      color: white;
+      cursor: pointer;
+      margin-right: 5px;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1259a7;
+    }
+
+    .btn-reset {
+      background: #777;
+    }
+
+    .btn-reset:hover {
+      background: #555;
+    }
+
+    .btn-edit {
+      background: #388e3c;
+    }
+
+    .btn-edit:hover {
+      background: #27642a;
+    }
+
+    .btn-delete {
+      background: #d32f2f;
+    }
+
+    .btn-delete:hover {
+      background: #a71d1d;
+    }
+
+    /*  3.입력창 스타일 */
+    input, textarea, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    /* 읽기 전용 필드를 비활성화처럼 보이게 처리 */
+    .readonly-box {
+      background: #eeeeee;
+      color: #666666;
+      cursor: not-allowed;
+    }
+
+    /* 4. 업로드 결과 영역 */
+    .result-flex {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .left-box {
+      width: 220px;
+    }
+
+    .right-box {
+      flex: 1;
+      min-width: 700px;
+    }
+
+    .empty-box {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    img.preview {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 5px;
+      background: #fff;
+    }
+
+    img.table-img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /*  5. 테이블 스타일 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      vertical-align: middle;
+      word-break: break-word;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0f4f8;
+    }
+
+    /*  6. 수정 폼 영역 */
+    #editSection {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .edit-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .edit-image-box {
+      width: 250px;
+      text-align: center;
+    }
+
+    .edit-image-box img {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      padding: 5px;
+    }
+
+    .edit-form-box {
+      flex: 1;
+      min-width: 700px;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    /*  7. 상태 뱃지 스타일  */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-ready {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .status-fail {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .status-done {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    /* 8. 챗봇 스타일 */
+    #chatWindow {
+      height: 350px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      background: #fafafa;
+      margin-bottom: 10px;
+    }
+
+    .chat-user,
+    .chat-bot {
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .chat-user {
+      color: #1565c0;
+    }
+
+    .chat-bot {
+      color: #2e7d32;
+    }
+
+    .chat-bubble {
+      padding: 10px;
+      border-radius: 8px;
+      background: #e3f2fd;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+
+    .chat-bubble.bot {
+      background: #e8f5e9;
+    }
+  </style>
+</head>
+<body>
+  <h1>StyleFinder AI (AI 기반 상품 분류 · 관리 · 상담 서비스)</h1>
+  <div class="sub-text">
+    이미지 업로드, 상품 검색/수정/삭제, 상품 질문하기 기능을 한 화면에서 실습할 수 있습니다.
+  </div>
+
+  <!-- 1. 상품 이미지 업로드 -->
+  <div class="box">
+    <h2>1. 상품 이미지 업로드</h2>
+
+    <input type="file" id="fileInput" accept="image/*" />
+    <button onclick="uploadImage()">이미지 분석 & 저장</button>
+    <button class="btn-reset" onclick="resetAll()">초기화</button>
+
+    <div class="result-flex">
+      <div class="left-box">
+        <h3>이미지 미리보기</h3>
+        <img
+          id="previewImage"
+          class="preview"
+          src="img/img_default.jpg"
+          onerror="this.src='img/img_default.jpg'"
+          alt="미리보기"
+        />
+      </div>
+
+      <div class="right-box">
+        <h3>분석 결과</h3>
+        <div id="resultArea" class="empty-box">아직 분석 결과가 없습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!--  2. 상품 검색 & CRUD -->
+  <div class="box">
+    <h2>2. 상품 검색 & CRUD</h2>
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="예: 운동화, 치마, 모자, 로퍼"
+    />
+    <button onclick="searchProducts()">검색</button>
+    <button onclick="loadAllProducts()">전체 보기</button>
+
+    <table id="searchTable"></table>
+  </div>
+
+  <!-- 3. 상품 수정 ( 필드 추가,이미지도 같이 가져오기, 수정 불가능한 값은 회색으로 비활성화처럼 표시) -->
+  <div class="box" id="editBox">
+    <h2>3. 상품 수정 - 필드 추가</h2>
+
+    <div id="editSection">
+      <div class="edit-wrapper">
+        <!-- 왼쪽: 수정 대상 이미지 -->
+        <div class="edit-image-box">
+          <img
+            id="editImage"
+            src="img/img_default.jpg"
+            onerror="this.src='img/img_default.jpg'"
+            alt="수정 이미지"
+          />
+          <div class="sub-text" style="margin-top:10px;">
+            수정할 상품 이미지
+          </div>
+        </div>
+
+        <!-- 오른쪽: 수정 폼 -->
+        <div class="edit-form-box">
+          <div class="edit-grid">
+            <div>
+              <label>상품 ID</label>
+              <input type="text" id="editId" readonly class="readonly-box" />
+            </div>
+
+            <div>
+              <label>상태(status)</label>
+              <!-- 상태 선택 -->
+              <select id="editStatus">
+                <option value="READY">READY</option>                <!-- 정상 -->
+                <option value="MAPPING_FAILED">MAPPING_FAILED</option>  <!-- 매핑 실패 -->
+                <option value="UPDATED">UPDATED</option>            <!-- 수정 완료 -->
+              </select>
+            </div>
+
+            <div>
+              <label>상품명(title)</label>
+              <input type="text" id="editTitle" />
+            </div>
+
+            <div>
+              <label>카테고리(category)</label>
+              <input type="text" id="editCategory" />
+            </div>
+
+            <div>
+              <label>대분류(main_cat)</label>
+              <input type="text" id="editMainCat" />
+            </div>
+
+            <div>
+              <label>중분류(mid_cat)</label>
+              <input type="text" id="editMidCat" />
+            </div>
+
+            <div>
+              <label>소분류(sub_cat)</label>
+              <input type="text" id="editSubCat" />
+            </div>
+
+            <div>
+              <label>YOLO 라벨(yolo_label)</label>
+              <input type="text" id="editYoloLabel" readonly class="readonly-box" />
+            </div>
+
+            <div>
+              <label>정확도(confidence)</label>
+              <input type="text" id="editConfidence" readonly class="readonly-box" />
+            </div>
+
+            <div>
+              <label>이미지 경로(image_path)</label>
+              <input type="text" id="editImagePath" readonly class="readonly-box" />
+            </div>
+
+            <div class="full-width">
+              <label>설명(description)</label>
+              <textarea id="editDescription" rows="4"></textarea>
+            </div>
+
+            <div class="full-width">
+              <label>태그(tags, 쉼표로 구분)</label>
+              <input type="text" id="editTags" />
+            </div>
+          </div>
+
+          <button onclick="saveEdit()">수정 저장</button>
+          <button class="btn-reset" onclick="cancelEdit()">취소</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="editGuide" class="sub-text">
+      위 표에서 <b>수정</b> 버튼을 누르면 이미지와 수정 폼이 함께 열립니다.
+    </div>
+  </div>
+
+  <!--  4. 상품 관련 질문하기 (RAG 챗봇) -->
+  <div class="box">
+    <h2>4. 상품 관련 질문하기 (RAG 챗봇)</h2>
+
+    <div id="chatWindow"></div>
+    <textarea
+      id="chatInput"
+      rows="3"
+      placeholder="예: 이 상품은 어떤 용도로 잘 어울리나요?"
+    ></textarea>
+    <button onclick="sendChat()">전송</button>
+    <button class="btn-reset" onclick="clearChat()">대화 초기화</button>
+  </div>
+
+  <script>
+    // 1. 공통 설정
+    const BASE_URL = "http://127.0.0.1:8000";
+
+    // 검색 결과 목록을 전역 변수로 보관
+    let searchResults = [];
+
+    //2. 페이지 시작 시 전체 상품 목록 조회 /
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        await loadAllProducts();
+      } catch (error) {
+        console.error("초기 데이터 로딩 실패:", error);
+      }
+    });
+
+    // 3. 이미지 업로드 & 분석 & 저장
+    async function uploadImage() {
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("이미지를 선택하세요.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      showResultMessage("이미지 분석 중입니다...");
+
+      try {
+        const res = await fetch(BASE_URL + "/classify-and-save", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          showResultMessage("분석 실패: " + text);
+          return;
+        }
+
+        const data = await res.json();
+
+        updatePreviewImage(data.image_path);
+        drawResultTable(data);
+        await loadAllProducts();
+
+      } catch (error) {
+        console.error(error);
+        showResultMessage("오류 발생: " + error);
+      }
+    }
+
+
+
+    // 4. 분석 결과 표시
+    function drawResultTable(data) {
+      const tagsText = Array.isArray(data.tags) ? data.tags.join(", ") : "";
+
+      const html = `
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>이미지</th>
+            <th>상품명</th>
+            <th>카테고리</th>
+            <th>대분류</th>
+            <th>중분류</th>
+            <th>소분류</th>
+            <th>YOLO 라벨</th>
+            <th>정확도</th>
+            <th>태그</th>
+            <th>상태</th>
+          </tr>
+          <tr>
+            <td>${safe(data.id)}</td>
+            <td>
+              ${
+                data.image_path
+                  ? `<img class="table-img" src="${BASE_URL + data.image_path}?t=${Date.now()}" onerror="this.src='img/img_default.jpg'">`
+                  : "이미지 없음"
+              }
+            </td>
+            <td>${safe(data.title)}</td>
+            <td>${safe(data.category)}</td>
+            <td>${safe(data.main_cat)}</td>
+            <td>${safe(data.mid_cat)}</td>
+            <td>${safe(data.sub_cat)}</td>
+            <td>${safe(data.yolo_label)}</td>
+            <td>${safe(data.confidence)}</td>
+            <td>${safe(tagsText)}</td>
+            <td>${makeStatusBadge(data.status)}</td>
+          </tr>
+        </table>
+      `;
+
+      document.getElementById("resultArea").innerHTML = html;
+    }
+
+    function showResultMessage(message) {
+      document.getElementById("resultArea").innerHTML =
+        `<div class="empty-box">${escapeHtml(message)}</div>`;
+    }
+
+    function updatePreviewImage(imagePath) {
+      const previewImage = document.getElementById("previewImage");
+
+      if (imagePath && imagePath !== "null" && imagePath !== "None") {
+        previewImage.src = BASE_URL + imagePath + "?t=" + Date.now();
+      } else {
+        previewImage.src = "img/img_default.jpg";
+      }
+
+      previewImage.onerror = function () {
+        this.src = "img/img_default.jpg";
+      };
+    }
+
+    //5. 상품 전체 조회 / 검색
+    async function loadAllProducts() {
+      document.getElementById("searchInput").value = "";
+      await fetchProductList("");
+    }
+
+    async function searchProducts() {
+      const keyword = document.getElementById("searchInput").value.trim();
+      await fetchProductList(keyword);
+    }
+
+    async function fetchProductList(keyword) {
+      try {
+        const res = await fetch(
+          BASE_URL + "/search-products?q=" + encodeURIComponent(keyword)
+        );
+
+        if (!res.ok) {
+          const text = await res.text();
+          alert("검색 실패: " + text);
+          return;
+        }
+
+        const data = await res.json();
+        searchResults = Array.isArray(data) ? data : [];
+        renderSearchTable(searchResults);
+
+      } catch (error) {
+        console.error(error);
+        alert("검색 오류: " + error);
+      }
+    }
+
+    // 6. 상품 테이블 그리기
+    function renderSearchTable(list) {
+      const table = document.getElementById("searchTable");
+
+      if (!list.length) {
+        table.innerHTML = `
+          <tr>
+            <td colspan="12">조회된 상품이 없습니다.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = `
+        <tr>
+          <th>ID</th>
+          <th>이미지</th>
+          <th>상품명</th>
+          <th>카테고리</th>
+          <th>대분류</th>
+          <th>중분류</th>
+          <th>소분류</th>
+          <th>YOLO 라벨</th>
+          <th>정확도</th>
+          <th>태그</th>
+          <th>상태</th>
+          <th>관리</th>
+        </tr>
+      `;
+
+      for (const p of list) {
+        const tagsText = Array.isArray(p.tags) ? p.tags.join(", ") : "";
+        const imageHtml = p.image_path
+          ? `<img class="table-img" src="${BASE_URL + p.image_path}?t=${Date.now()}" onerror="this.src='img/img_default.jpg'">`
+          : "이미지 없음";
+
+        html += `
+          <tr>
+            <td>${safe(p.id)}</td>
+            <td>${imageHtml}</td>
+            <td>${safe(p.title)}</td>
+            <td>${safe(p.category)}</td>
+            <td>${safe(p.main_cat)}</td>
+            <td>${safe(p.mid_cat)}</td>
+            <td>${safe(p.sub_cat)}</td>
+            <td>${safe(p.yolo_label)}</td>
+            <td>${safe(p.confidence)}</td>
+            <td>${safe(tagsText)}</td>
+            <td>${makeStatusBadge(p.status)}</td>
+            <td>
+              <button class="btn-edit" onclick="openEditForm(${p.id})">수정</button>
+              <button class="btn-delete" onclick="deleteProduct(${p.id})">삭제</button>
+            </td>
+          </tr>
+        `;
+      }
+
+      table.innerHTML = html;
+    }
+
+    // 7. 수정 폼 열기 (이미지도 함께 불러오기)*/
+    function openEditForm(id) {
+      const product = searchResults.find(item => Number(item.id) === Number(id));
+
+      if (!product) {
+        alert("수정할 상품 정보를 찾지 못했습니다.");
+        return;
+      }
+
+      document.getElementById("editSection").style.display = "block";
+      document.getElementById("editGuide").style.display = "none";
+
+      // 수정할 이미지 표시
+      const editImage = document.getElementById("editImage");
+      if (product.image_path && product.image_path !== "null" && product.image_path !== "None") {
+        editImage.src = BASE_URL + product.image_path + "?t=" + Date.now();
+      } else {
+        editImage.src = "img/img_default.jpg";
+      }
+
+      editImage.onerror = function () {
+        this.src = "img/img_default.jpg";
+      };
+
+      // 입력창 값 채우기
+      document.getElementById("editId").value = product.id ?? "";
+      document.getElementById("editStatus").value = product.status ?? "READY";
+      document.getElementById("editTitle").value = product.title ?? "";
+      document.getElementById("editCategory").value = product.category ?? "";
+      document.getElementById("editMainCat").value = product.main_cat ?? "";
+      document.getElementById("editMidCat").value = product.mid_cat ?? "";
+      document.getElementById("editSubCat").value = product.sub_cat ?? "";
+      document.getElementById("editYoloLabel").value = product.yolo_label ?? "";
+      document.getElementById("editConfidence").value = product.confidence ?? "";
+      document.getElementById("editImagePath").value = product.image_path ?? "";
+      document.getElementById("editDescription").value = product.description ?? "";
+      document.getElementById("editTags").value = Array.isArray(product.tags)
+        ? product.tags.join(", ")
+        : "";
+
+      document.getElementById("editBox").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // 8. 수정 저장
+    async function saveEdit() {
+      const id = Number(document.getElementById("editId").value);
+
+      if (!id) {
+        alert("수정할 상품 ID가 없습니다.");
+        return;
+      }
+
+      const payload = {
+        id: id,
+        status: document.getElementById("editStatus").value.trim(),
+        title: document.getElementById("editTitle").value.trim(),
+        category: document.getElementById("editCategory").value.trim(),
+        main_cat: document.getElementById("editMainCat").value.trim(),
+        mid_cat: document.getElementById("editMidCat").value.trim(),
+        sub_cat: document.getElementById("editSubCat").value.trim(),
+        description: document.getElementById("editDescription").value.trim(),
+        tags: document.getElementById("editTags").value
+          .split(",")
+          .map(tag => tag.trim())
+          .filter(tag => tag)
+      };
+
+      try {
+        const res = await fetch(BASE_URL + "/update-product", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          alert("수정 실패: " + text);
+          return;
+        }
+
+        await res.json();
+        alert("수정 완료");
+
+        cancelEdit();
+        await searchProducts();
+
+      } catch (error) {
+        console.error(error);
+        alert("수정 오류: " + error);
+      }
+    }
+
+    // 9. 수정 취소
+    function cancelEdit() {
+      document.getElementById("editSection").style.display = "none";
+      document.getElementById("editGuide").style.display = "block";
+
+      document.getElementById("editId").value = "";
+      document.getElementById("editStatus").value = "READY";
+      document.getElementById("editTitle").value = "";
+      document.getElementById("editCategory").value = "";
+      document.getElementById("editMainCat").value = "";
+      document.getElementById("editMidCat").value = "";
+      document.getElementById("editSubCat").value = "";
+      document.getElementById("editYoloLabel").value = "";
+      document.getElementById("editConfidence").value = "";
+      document.getElementById("editImagePath").value = "";
+      document.getElementById("editDescription").value = "";
+      document.getElementById("editTags").value = "";
+      document.getElementById("editImage").src = "img/img_default.jpg";
+    }
+
+
+    // 10. 상품 삭제
+    async function deleteProduct(id) {
+      const ok = confirm("정말 삭제하시겠습니까?");
+      if (!ok) return;
+
+      try {
+        const res = await fetch(BASE_URL + "/delete-product/" + id, {
+          method: "DELETE"
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          alert("삭제 실패: " + text);
+          return;
+        }
+
+        await res.json();
+        alert("삭제 완료");
+
+        await searchProducts();
+
+      } catch (error) {
+        console.error(error);
+        alert("삭제 오류: " + error);
+      }
+    }
+
+    // 11. RAG 챗봇
+    async function sendChat() {
+      const chatInput = document.getElementById("chatInput");
+      const question = chatInput.value.trim();
+
+      if (!question) {
+        alert("질문을 입력하세요.");
+        return;
+      }
+
+      appendChat("user", question);
+      chatInput.value = "";
+
+      try {
+        const res = await fetch(BASE_URL + "/rag-chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          appendChat("bot", "오류: " + text);
+          return;
+        }
+
+        const data = await res.json();
+        appendChat("bot", data.answer || "응답이 없습니다.");
+
+      } catch (error) {
+        console.error(error);
+        appendChat("bot", "오류: " + error);
+      }
+    }
+
+    function appendChat(role, text) {
+      const chatWindow = document.getElementById("chatWindow");
+      const div = document.createElement("div");
+
+      if (role === "user") {
+        div.innerHTML = `
+          <div class="chat-user">사용자</div>
+          <div class="chat-bubble">${escapeHtml(text)}</div>
+        `;
+      } else {
+        div.innerHTML = `
+          <div class="chat-bot">StyleFinder AI</div>
+          <div class="chat-bubble bot">${escapeHtml(text)}</div>
+        `;
+      }
+
+      chatWindow.appendChild(div);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function clearChat() {
+      document.getElementById("chatWindow").innerHTML = "";
+    }
+
+
+    // 12. 화면 초기화
+    function resetAll() {
+      document.getElementById("fileInput").value = "";
+      document.getElementById("previewImage").src = "img/img_default.jpg";
+      document.getElementById("resultArea").innerHTML =
+        `<div class="empty-box">아직 분석 결과가 없습니다.</div>`;
+      cancelEdit();
+      clearChat();
+      loadAllProducts();
+    }
+
+
+    // 13. 상태 뱃지 출력 함수
+    function makeStatusBadge(status) {
+
+      // 매핑 실패 (category.py에 없는 경우)
+      if (status === "MAPPING_FAILED") {
+        return `<span class="status-badge status-fail">MAPPING_FAILED</span>`;
+      }
+
+      // 사용자가 수정 완료한 상태
+      if (status === "UPDATED") {
+        return `<span class="status-badge status-done">UPDATED</span>`;
+      }
+
+      // 기본 상태 (정상 저장)
+      return `<span class="status-badge status-ready">READY</span>`;
+    }
+    
+    // 14. 공통 유틸 함수
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function safe(value) {
+      if (value === null || value === undefined || value === "") {
+        return "-";
+      }
+      return escapeHtml(String(value));
+    }
+  </script>
+</body>
+</html>
