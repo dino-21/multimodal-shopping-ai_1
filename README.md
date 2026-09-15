@@ -2,6 +2,9 @@
 
 이미지를 업로드하면 YOLO가 상품 종류를 분류하고, 분석 결과를 MySQL에 저장하는 멀티모달 쇼핑 AI 서비스입니다. 상품 검색·수정·삭제 기능과 쇼핑몰 문서를 참고하는 OpenAI 챗봇 기능도 제공합니다.
 
+<img width="1064" height="1600" alt="001" src="https://github.com/user-attachments/assets/c66367f8-0ce9-40d9-bb9c-d68a7fd19961" />
+
+
 ## 주요 기능
 
 - 상품 이미지 업로드
